@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Palm</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@400;700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        *{
+            margin:0;
+            padding:0;
+            box-sizing:border-box;
+        }
+
+        body{
+            background:#ffffff;
+            color:#111111;
+            font-family:Inter,sans-serif;
+            min-height:100vh;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            padding:64px;
+        }
+
+        .container{
+            max-width:900px;
+            width:100%;
+        }
+
+        .tag{
+            display:inline-block;
+            padding:6px 12px;
+            border:1px solid #e5e5e5;
+            border-radius:999px;
+            font-size:14px;
+            color:#666;
+            margin-bottom:32px;
+        }
+
+        h1{
+            font-family:"Merriweather",serif;
+            font-size:clamp(3rem,8vw,5.5rem);
+            line-height:1;
+            font-weight:900;
+            letter-spacing:-2px;
+            margin-bottom:24px;
+        }
+
+        p{
+            max-width:620px;
+            font-size:18px;
+            line-height:1.7;
+            color:#555;
+            margin-bottom:40px;
+        }
+
+        .buttons{
+            display:flex;
+            gap:16px;
+            flex-wrap:wrap;
+        }
+
+        .primary{
+            background:#111;
+            color:#fff;
+            border:none;
+            padding:15px 28px;
+            border-radius:12px;
+            font:600 16px Inter,sans-serif;
+            cursor:pointer;
+        }
+
+        .secondary{
+            background:#fff;
+            color:#111;
+            border:1px solid #ddd;
+            padding:15px 28px;
+            border-radius:12px;
+            font:600 16px Inter,sans-serif;
+            cursor:pointer;
+        }
+
+        .primary:hover{
+            background:#222;
+        }
+
+        .secondary:hover{
+            background:#f7f7f7;
+        }
+
+        footer{
+            margin-top:80px;
+            color:#888;
+            font-size:14px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <div class="tag">Palm</div>
+
+    <h1>The future of<br>making a website.</h1>
+
+    <p>
+        Build fast, beautiful websites with a simple workflow designed
+        for creators, developers, and teams.
+    </p>
+
+    <div class="buttons">
+        <button class="primary">Create now</button>
+        <button class="secondary">Learn more</button>
+    </div>
+
+    <footer>
+        by Palm
+    </footer>
+
+</div>
+
+</body>
+</html>
