@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Palm - Claim your domain</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@700;900&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        *{ margin:0; padding:0; box-sizing:border-box; }
+        body{
+            background:#ffffff; color:#111; font-family:Inter,sans-serif;
+            min-height:100vh; display:flex; align-items:center; justify-content:center; padding:40px;
+        }
+        .setup-card {
+            max-width: 460px; width: 100%; border: 1px solid #e5e5e5;
+            border-radius: 24px; padding: 48px; box-shadow: 0 16px 32px rgba(0,0,0,0.02);
+        }
+        .tag {
+            display:inline-block; padding:4px 10px; border:1px solid #e5e5e5;
+            border-radius:999px; font-size:12px; color:#666; margin-bottom:24px; cursor:pointer;
+        }
+        h2 { font-family:"Merriweather",serif; font-size:28px; font-weight:900; margin-bottom:12px; letter-spacing:-0.5px;}
+        p.subtitle { font-size:15px; color:#666; margin-bottom:32px; line-height:1.5; }
+        .input-group { margin-bottom:24px; }
+        .input-group label { display:block; font-size:13px; font-weight:600; margin-bottom:8px; color:#333; }
+        .std-input {
+            width:100%; border:1px solid #ddd; border-radius:12px; padding:14px;
+            font-size:16px; outline:none; font-family:Inter,sans-serif; background:#fbfbfb; transition:all 0.2s;
+        }
+        .std-input:focus { border-color:#111; background:#fff; }
+        
+        .domain-wrapper {
+            display:flex; align-items:center; border:1px solid #ddd; border-radius:12px;
+            padding:0 14px; background:#fbfbfb;
+        }
+        .domain-wrapper input { border:none; background:transparent; padding:14px 0; font-size:16px; width:100%; outline:none; }
+        .domain-suffix { color:#888; font-weight:500; user-select:none; }
+
+        .btn-block {
+            width:100%; background:#111; color:#fff; border:none; padding:16px;
+            border-radius:12px; font:600 16px Inter,sans-serif; cursor:pointer; margin-top:8px;
+        }
+        .btn-block:hover { background:#222; }
+        .step-panel { display:none; }
+        .step-panel.active { display:block; }
+    </style>
+</head>
+<body>
+
+<div class="setup-card">
+    <div class="tag" onclick="window.location.href='index.html'">← Palm Home</div>
+
+    <!-- STEP 1: REQUEST CODE -->
+    <div class="step-panel active" id="panel-email">
+        <h2>Verify your email</h2>
+        <p class="subtitle">We will send a temporary login code straight to your inbox to initialize secure deployment access.</p>
+        <div class="input-group">
+            <label for="auth-email">Email Address</label>
+            <input type="email" id="auth-email" class="std-input" placeholder="you@example.com">
+        </div>
+        <button class="btn-block" onclick="requestVerificationCode()">Send code</button>
+    </div>
+
+    <!-- STEP 2: ENTER CODE & PASSWORD -->
+    <div class="step-panel" id="panel-credentials">
+        <h2>Secure your space</h2>
+        <p class="subtitle">Enter the token sent to your email and select your master environment password.</p>
+        <div class="input-group">
+            <label for="auth-code">Verification Code</label>
+            <input type="text" id="auth-code" class="std-input" placeholder="6-digit code" maxlength="6">
+        </div>
+        <div class="input-group">
+            <label for="auth-pass">Choose Password</label>
+            <input type="password" id="auth-pass" class="std-input" placeholder="••••••••">
+        </div>
+        <button class="btn-block" onclick="verifyAndSaveUser()">Verify & Save</button>
+    </div>
+
+    <!-- STEP 3: CLAIM SUBDOMAIN & DEPLOY -->
+    <div class="step-panel" id="panel-domain">
+        <h2>Claim your node</h2>
+        <p class="subtitle">Your account is active! Reserve your permanent global subdomain and stage your production files.</p>
+        <div class="input-group">
+            <label for="subdomain-choice">Subdomain URL</label>
+            <div class="domain-wrapper">
+                <input type="text" id="subdomain-choice" placeholder="my-app">
+                <span class="domain-suffix">.palm.pm</span>
+            </div>
+        </div>
+        <button class="btn-block" onclick="registerDomain()">Claim Domain</button>
+    </div>
+</div>
+
+<script>
+    const BACKEND_URL = 'http://localhost:3000';
+    let userEmail = '';
+
+    function switchPanel(panelId) {
+        document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+        document.getElementById(panelId).classList.add('active');
+    }
+
+    // Step 1 API Call: Send Code
+    async function requestVerificationCode() {
+        const email = document.getElementById('auth-email').value.trim();
+        if(!email) return alert('Please enter a valid email.');
+
+        try {
+            const res = await fetch(`${BACKEND_URL}/api/auth/request-code`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+            const data = await res.json();
+            
+            if(data.success) {
+                userEmail = email;
+                alert(`System simulation code generated: ${data.debugCode}`); // Showing the code for development easy testing!
+                switchPanel('panel-credentials');
+            } else {
+                alert(data.message);
+            }
+        } catch(e) { alert('Could not contact server engine.'); }
+    }
+
+    // Step 2 API Call: Verify Code & Save Password
+    async function verifyAndSaveUser() {
+        const code = document.getElementById('auth-code').value.trim();
+        const password = document.getElementById('auth-pass').value.trim();
+        if(!code || !password) return alert('Complete all credential items.');
+
+        try {
+            const res = await fetch(`${BACKEND_URL}/api/auth/verify`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: userEmail, code, password })
+            });
+            const data = await res.json();
+
+            if(data.success) {
+                alert('Account secured successfully!');
+                switchPanel('panel-domain');
+            } else {
+                alert(data.message);
+            }
+        } catch(e) { alert('Verification interface timed out.'); }
+    }
+
+    // Step 3 API Call: Claim Domain Namespace
+    async function registerDomain() {
+        const domain = document.getElementById('subdomain-choice').value.trim().toLowerCase().replace(/[^a-z0-9-]/g, '');
+        if(!domain) return alert('Enter a valid alphanumeric subdomain.');
+
+        try {
+            const res = await fetch(`${BACKEND_URL}/api/domain/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: userEmail, subdomain: domain })
+            });
+            const data = await res.json();
+
+            if(data.success) {
+                alert(`Success! ${domain}.palm.pm is now linked to your workspace.`);
+                window.location.href = 'index.html'; // Redirect to workspace dashboard
+            } else {
+                alert(data.message);
+            }
+        } catch(e) { alert('Domain namespace registration failed.'); }
+    }
+</script>
+</body>
+</html>
