@@ -39,10 +39,15 @@ const upload = multer({ storage: storage });
 // --- VIRTUAL SUBDOMAIN ROUTING ROUTER ---
 // This acts as the host manager. If someone goes to site.palm.pm, it maps to their deployment folder.
 app.use((req, res, next) => {
-    const host = req.headers.host;
+    const host = req.headers.host; // e.g., palm-n4b6.onrender.com
     const parts = host.split('.');
     
-    // If a subdomain exists and isn't 'www' or 'api'
+    // Bypass logic: If someone hits your main Render link, skip subdomain logic so the API passes through!
+    if (host.includes('palm-n4b6.onrender.com') || host.includes('localhost')) {
+        return next();
+    }
+    
+    // Standard subdomain handling for your custom user sites
     if (parts.length > 2 && parts[0] !== 'www' && parts[0] !== 'api') {
         const subdomain = parts[0];
         const deployPath = path.join(__dirname, 'deployments', subdomain);
@@ -54,6 +59,11 @@ app.use((req, res, next) => {
         }
     }
     next();
+});
+
+// --- API ROOT WELCOME STATUS ---
+app.get('/', (req, res) => {
+    res.send('<h1>🌴 Palm Engine Online</h1><p>Your API Gateway is running smoothly and ready for frontend connections.</p>');
 });
 
 // --- API AUTHENTICATION ENDPOINTS ---
