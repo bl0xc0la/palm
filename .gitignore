@@ -141,3 +141,7 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+# --- Custom Palm Hosting Rules ---
+# This keeps your repo light and stops you from committing other people's live uploads
+server/deployments/
+deployments/
